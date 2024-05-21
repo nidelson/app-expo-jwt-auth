@@ -10,6 +10,7 @@ const Login = () => {
 
   const login = async () => {
     const result = await onLogin!(email, password);
+
     if (result && result.error) {
       alert(result.message);
     }
@@ -29,6 +30,8 @@ const Login = () => {
       <View style={styles.form}>
         <Text style={styles.title}>Login</Text>
         <TextInput
+          autoCapitalize="none"
+          keyboardType="email-address"
           style={styles.input}
           placeholder="Email"
           value={email}
