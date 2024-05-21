@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 const TOKEN_KEY = 'app-token';
-export const API_URL = 'https://api.developerbetterapps.com';
+export const API_URL = 'https://api.developbetterapps.com';
 
 export const loadToken = async () => {
   const token = await SecureStore.getItemAsync(TOKEN_KEY);
@@ -33,9 +33,7 @@ export const login = async (email: string, password: string) => {
       autenticated: true,
     };
   } catch (error) {
-    console.log(error);
-
-    return { error: true, message: (error as any).response.data.message };
+    throw error;
   }
 };
 
