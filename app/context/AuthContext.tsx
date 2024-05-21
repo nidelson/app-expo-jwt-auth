@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { AxiosError } from 'axios';
 
 import { register } from '../services/userService';
 import { loadToken, login, logout } from '../services/authService';
@@ -47,7 +48,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   });
 
   useEffect(() => {
-    async () => {
+    (async () => {
       const token = await loadToken();
 
       if (token) {
@@ -56,15 +57,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
           autenticated: true,
         });
       }
-    };
+    })();
   }, []);
+
+  const onRegister = async (email: string, password: string) => {
+    try {
+      return await register(email, password);
+    } catch (error) {
+      return { error: true, message: (error as AxiosError).message };
+    }
+  };
 
   const onLogin = async (email: string, password: string) => {
     try {
       const response = await login(email, password);
-      setAuthState(response as AuthContextProps['authState']);
+      const authState = response as AuthContextProps['authState'];
+      setAuthState(authState);
+
+      return response;
     } catch (error) {
-      return { error: true, message: (error as any).response.data.message };
+      return { error: true, message: (error as AxiosError).message };
     }
   };
 
@@ -72,12 +84,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const response = await logout();
       setAuthState(response as AuthContextProps['authState']);
+
+      return response;
     } catch (error) {
-      return { error: true, message: (error as any).response.data.message };
+      return { error: true, message: (error as AxiosError).message };
     }
   };
 
-  const value = { authState, onRegister: register, onLogin, onLogout };
+  const value = { authState, onRegister, onLogin, onLogout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
